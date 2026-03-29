@@ -567,15 +567,5 @@ nav {
             <span>DESIGNED FOR THE FUTURE</span>
         </div>
     </footer>
-
-    <script>
-        // Smooth Parallax for Hero Visual
-        document.addEventListener('mousemove', e => {
-            const visual = document.querySelector('.hero-visual');
-            const x = (window.innerWidth / 2 - e.clientX) / 50;
-            const y = (window.innerHeight / 2 - e.clientY) / 50;
-            visual.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-        });
-    </script>
 </body>
 </html>
