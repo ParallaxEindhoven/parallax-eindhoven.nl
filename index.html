@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="./favicon.png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax - The 170m Perspective</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Tenor+Sans&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141412;
+            --accent: #e58d4e;
+            --accent-glow: rgba(229, 141, 78, 0.3);
+            --text-main: #f4f4f1;
+            --text-dim: rgba(244, 244, 241, 0.6);
+            --font-display: 'Tenor Sans', serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* CUSTOM CURSOR */
+        #cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 999999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s;
+        }
+
+/* UPDATED MODERN NAVIGATION */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 1.5rem 5%; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 9999; 
+    
+    background: rgba(10, 10, 10, 0.4); 
+    backdrop-filter: blur(20px); 
+    -webkit-backdrop-filter: blur(20px); 
+    
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    
+    transition: all 0.4s ease;
+}
+
+.logo {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    letter-spacing: 0.4em;
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 500;
+    text-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* GALLERY SECTION */
+        .gallery-section {
+            padding: 10% 5%;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 300px;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 2rem;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
+            cursor: pointer;
+            background: var(--surface);
+        }
+
+        /* Dark gradient overlay that sits on top of the image */
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10,10,10,0.9), transparent 60%);
+            opacity: 0.8;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Hover animations */
+        .gallery-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.08); /* Slow, elegant zoom */
+        }
+
+        .gallery-item:hover::before {
+            opacity: 0.4; /* Overlay fades to reveal the image */
+        }
+
+        /* Slide-up text on hover */
+        .gallery-caption {
+            position: absolute;
+            bottom: -2rem;
+            left: 2rem;
+            z-index: 2;
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--text-main);
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            bottom: 2rem;
+            opacity: 1;
+        }
+
+        /* Asymmetrical sizing classes */
+        .gal-wide { grid-column: span 2; }
+        .gal-tall { grid-row: span 2; }
+
+        /* Mobile Responsiveness for Gallery */
+        @media (max-width: 968px) {
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+            .gal-wide { grid-column: span 2; }
+            .gal-tall { grid-row: span 1; } /* Reset tall on mobile to prevent stretching */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover { opacity: 1; letter-spacing: 0.3em; }
+
+        /* HERO SECTION */
+        .hero {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            padding: 0 5%;
+            position: relative;
+        }
+
+        .hero-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 10vw, 12rem);
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .hero-text h1 span {
+            display: block;
+            margin-left: 2rem;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .hero-visual {
+            height: 80vh;
+            background: url('./lounge.png') center/cover;
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5);
+        }
+
+        .hero-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--bg), transparent);
+        }
+
+        /* BENTO SECTION */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 300px;
+            gap: 1.5rem;
+            padding: 5%;
+        }
+
+        .bento-item {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bento-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-10px);
+        }
+
+        .item-lg { grid-column: span 2; grid-row: span 2; }
+        .item-tall { grid-row: span 2; }
+
+        .bento-item h3 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .bento-item p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .bento-stat {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 4rem;
+            font-family: var(--font-display);
+            color: var(--accent);
+            opacity: 0.2;
+        }
+
+        /* MENU SECTION */
+        .menu-section {
+            padding: 10% 5%;
+        }
+
+        .section-tag {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            font-size: 0.7rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .drink-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .drink-row:hover {
+            padding-left: 2rem;
+            background: linear-gradient(90deg, var(--surface), transparent);
+        }
+
+        .drink-info h4 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+        }
+
+        .drink-price {
+            font-family: var(--font-sans);
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        /* FAQ SECTION STYLES */
+        .faq-section {
+            padding: 10% 5%;
+            background: linear-gradient(to bottom, var(--bg), var(--surface));
+        }
+
+        .faq-container {
+            max-width: 1000px;
+            margin-top: 4rem;
+        }
+
+        .faq-item {
+            margin-bottom: 2rem;
+            border-left: 1px solid rgba(229, 141, 78, 0.2);
+            padding-left: 2rem;
+            transition: var(--transition);
+        }
+
+        .faq-item:hover {
+            border-left: 1px solid var(--accent);
+        }
+
+        .faq-item h4 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .faq-item p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            max-width: 700px;
+        }
+
+        /* CTA BUTTON */
+        .cta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 1.2rem 2.5rem;
+            border-radius: 5rem;
+            text-decoration: none;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            margin-top: 2rem;
+        }
+
+        .cta-pill:hover {
+            transform: scale(1.05);
+            background: var(--text-main);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 5rem 5% 2rem;
+            background: var(--surface);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .big-link {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 2rem);
+            text-decoration: none;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .big-link:hover {
+            color: var(--accent);
+            padding-left: 1rem;
+        }
+
+        @media (max-width: 968px) {
+            .hero { grid-template-columns: 1fr; text-align: center; }
+            .hero-visual { display: none; }
+            .bento-grid { grid-template-columns: 1fr 1fr; }
+            .item-lg { grid-column: span 2; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#" class="logo">PARALLAX</a>
+        <div class="nav-links">
+            <a href="#menu">Menu</a>
+            <a href="#experience">Experience</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#faq">FAQ</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-text">
+            <span class="section-tag">Opening 2030 • Eindhoven</span>
+            <h1>Height<span>170m</span></h1>
+            <p class="hero-sub">The highest public cocktail lounge in Eindhoven. <br>A new altitude of mixology in District-E.</p>
+            <a href="#" class="cta-pill">Reserve a table ➔</a>
+        </div>
+        <div class="hero-visual" data-tilt></div>
+    </section>
+
+    <div class="bento-grid" id="experience">
+        <div class="bento-item item-lg" style="background-image: url('./cocktail-trimmed.png'); background-size: cover; background-blend-mode: overlay; background-color: rgba(0,0,0,0.4);">
+            <h3>The Perspective</h3>
+            <p>360-degree glass walls offering a view that reaches the horizon. Every table is a front-row seat to the best view in Eindhoven.</p>
+        </div>
+        <div class="bento-item">
+            <span class="bento-stat">44</span>
+            <h3>Top Floor</h3>
+            <p>Tower A, District-E.</p>
+        </div>
+        <div class="bento-item">
+            <h3>Hours</h3>
+            <p>We are open 19:00 - 02:00 on all thursdays, fridays, and saturdays.</p>
+        </div>
+        <div class="bento-item">
+            <h3>The Vibe</h3>
+            <p>The ultimate energy for reconnecting with friends, business partners, and alike.</p>
+        </div>
+        <div class="bento-item">
+            <h3>Events</h3>
+            <p>Book the best event venue in Eindhoven with ease.</p>
+            <p style="margin-top: 0.5rem; font-weight: 800; color: var(--accent); font-size: 0.7rem; letter-spacing: 0.1em;">All workdays.</p>
+        </div>
+    </div>
+
+    <section class="menu-section" id="menu">
+        <span class="section-tag">Liquid Geometry</span>
+        <h2 style="font-family: var(--font-display); font-size: 4rem; margin-bottom: 4rem;">Our Specials</h2>
+
+        <div class="drink-row">
+            <div class="drink-info">
+                <h4>Voltage Press</h4>
+                <p>Single-origin espresso, velvet vodka, salted cacao, vanilla bean foam.</p>
+            </div>
+            <div class="drink-price">€18</div>
+        </div>
+
+        <div class="drink-row">
+            <div class="drink-info">
+                <h4>District Heat</h4>
+                <p>Blanco tequila, agave nectar, pressed lime, habanero-infused salt rim.</p>
+            </div>
+            <div class="drink-price">€17</div>
+        </div>
+
+        <div class="drink-row">
+            <div class="drink-info">
+                <h4>Velvet Horizon</h4>
+                <p>Madagascar vanilla, passion fruit silk, served with a side of chilled Champagne.</p>
+            </div>
+            <div class="drink-price">€20</div>
+        </div>
+    
+        <div class="drink-row">
+            <div class="drink-info">
+                <h4>Strijp-S Sunset</h4>
+                <p>Small-batch gin, bitter apertivo, aged vermouth, scorched orange peel.</p>
+            </div>
+            <div class="drink-price">€18</div>
+        </div>
+    </section>
+
+<section class="gallery-section" id="gallery">
+        <span class="section-tag">The Aesthetic</span>
+        <h2 style="font-family: var(--font-display); font-size: 4rem; margin-bottom: 2rem;">Atmosphere</h2>
+
+        <div class="gallery-grid">
+            <div class="gallery-item gal-wide gal-tall">
+                <div class="gallery-img" style="background-image: url('./interieur-vibe-3.png');"></div>
+                <div class="gallery-caption">The 170m View</div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="gallery-img" style="background-image: url('https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?auto=format&fit=crop&q=80&w=800');"></div>
+                <div class="gallery-caption">Mixology</div>
+            </div>
+            
+            <div class="gallery-item gal-tall">
+                <div class="gallery-img" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=600');"></div>
+                <div class="gallery-caption">Details</div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="gallery-img" style="background-image: url('./interieur-bar.jpg');"></div>
+                <div class="gallery-caption">Ambiance</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section" id="faq">
+        <span class="section-tag">Common Inquiries</span>
+        <h2 style="font-family: var(--font-display); font-size: 4rem; margin-bottom: 2rem;">Information</h2>
+        
+        <div class="faq-item">
+            <h4>What is the dress code?</h4>
+            <p>We encourage business casual. While formal attire isn't required, we appreciate a style that complements the 170m perspective.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>Are walk-ins welcome?</h4>
+            <p>Always. However, due to our limited capacity at this altitude, we highly recommend securing a reservation to guarantee your view.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>Private Event Pricing?</h4>
+            <p>Exclusive floor hire begins at €400 per hour (excl. VAT), including two of our premier mixologists. For bespoke arrangements or multi-day bookings, contact <a href="mailto:events@parallax.nl" style="color: var(--accent);">events@parallax.nl</a>.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>Private Event Policy?</h4>
+            <p>We host a variety of curated gatherings. To respect our District-E neighbors, we specialize in sophisticated atmospheres rather than high-decibel events.</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <span class="section-tag">Reservations</span>
+                <a href="#" class="big-link">Reserve a table</a>
+                <a href="mailto:events@parallax.nl" class="big-link">Private Events</a>
+                <a href="mailto:careers@parallax.nl" class="big-link">Careers</a>
+            </div>
+            <div>
+                <p style="margin-bottom: 1rem; color: var(--accent);">Social</p>
+                <p>Instagram</p>
+                <p>LinkedIn</p>
+            </div>
+            <div>
+                <p style="margin-bottom: 1rem; color: var(--accent);">Location</p>
+                <p>District-E, Tower A</p>
+                <p>5611 Eindhoven</p>
+                <p>Netherlands</p>
+            </div>
+        </div>
+        <div style="margin-top: 5rem; opacity: 0.3; font-size: 0.7rem; letter-spacing: 0.2em; display: flex; justify-content: space-between;">
+            <span>© 2030 PARALLAX SKYLOUNGE</span>
+            <span>DESIGNED FOR THE FUTURE</span>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth Parallax for Hero Visual
+        document.addEventListener('mousemove', e => {
+            const visual = document.querySelector('.hero-visual');
+            const x = (window.innerWidth / 2 - e.clientX) / 50;
+            const y = (window.innerHeight / 2 - e.clientY) / 50;
+            visual.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
+    </script>
+</body>
+</html>
